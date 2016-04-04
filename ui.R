@@ -2,7 +2,7 @@ library(shiny)
 library(ggplot2)
 ## User interface
 ui <- fluidPage(
-    headerPanel("UNE Weather Station, Puerto Rico"),
+    headerPanel("Universidad del Este Weather Station, Puerto Rico"),
     
     sidebarPanel(
         selectInput("measure", "Select a weather measure:", 
