@@ -1,0 +1,34 @@
+---
+title: "Testing"
+author: "José A. Bartolomei-Díaz, PhD - Outcome Project, LLC."
+date: "April 4, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## UNE Weather Tests
+
+
+```{r libraies}
+library(ggplot2)
+```
+
+```{r load_data}
+rm(list = ls(all = TRUE))
+gc()
+load("./data/weather.Rdata")
+```
+
+## Including Plots
+
+Plot
+
+```{r Plot_test, echo=FALSE}
+ggplot(data = weather, aes(x = Date2, y = Temp_Out)) +
+	geom_line(alpha = 0.5) +
+	geom_smooth(na.rm = TRUE, colour = "green", fill = "pink")
+	
+```
