@@ -23,4 +23,5 @@ ui <- fluidPage(
     mainPanel(
         plotOutput("hourly"),
         plotOutput("daily"),
+        plotOutput("weekly"),
         h6("Source: Universidad del Este")))

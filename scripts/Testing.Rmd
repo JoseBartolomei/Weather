@@ -35,7 +35,7 @@ ggplot(data = weather, aes(x = Date2, y = Temp_Out)) +
 
 
 ```{r}
-# to obtain the mean outside temperature by day, month and year
+# to obtain the daily mean outside temperature by day, month and year
 dmy <- aggregate(Temp_Out ~ dmy , data = weather,
 								 FUN = function (x) mean(x, na.rm = TRUE))
 str(dmy)
