@@ -58,17 +58,38 @@ aggregate(Temp_Out ~ week , data = weather,
 plot(weather[, c("Temp_Out", "Hum_Out", "Dew_Pt", "Wind_Speed",
 															"Heat_Index", "Solar_Rad", "UV_Index", "UV_Dose")])
 
-# Daily data ------------------------------------------------------------------------
 
-wecor_day <- 
-	weather[!duplicated(weather$dmy),]
+# Daily aggregation -----------------------------------------------------------------
 
-# Daily correlation plot ------------------------------------------------------------
+library(dplyr)
+day_df <- weather %>% group_by(dmy) %>% 
+	summarise(Temp_Out = mean(Temp_Out, na.rm = TRUE),
+						Hum_Out = mean(Hum_Out, na.rm = TRUE),
+						Dew_Pt = mean(Dew_Pt, na.rm = TRUE),
+						Wind_Speed = mean(Wind_Speed, na.rm = TRUE),
+						Heat_Index = mean(Heat_Index, na.rm = TRUE),
+						Solar_Rad = mean(Solar_Rad, na.rm = TRUE),
+						UV_Index = mean(UV_Index, na.rm = TRUE),
+						UV_Dose = mean(UV_Dose, na.rm = TRUE)
+	)				
 
 
-plot(wecor_day[, c("Temp_Out", "Hum_Out", "Dew_Pt", "Wind_Speed",
-									 "Heat_Index", "Solar_Rad", "UV_Index", "UV_Dose")])
+# Weekly aggregatopm ------------------------------------------------------------
 
+
+library(dplyr)
+week_df <- weather %>% group_by(week) %>% 
+	summarise(Temp_Out = mean(Temp_Out, na.rm = TRUE),
+						Hum_Out = mean(Hum_Out, na.rm = TRUE),
+						Dew_Pt = mean(Dew_Pt, na.rm = TRUE),
+						Wind_Speed = mean(Wind_Speed, na.rm = TRUE),
+						Heat_Index = mean(Heat_Index, na.rm = TRUE),
+						Solar_Rad = mean(Solar_Rad, na.rm = TRUE),
+						UV_Index = mean(UV_Index, na.rm = TRUE),
+						UV_Dose = mean(UV_Dose, na.rm = TRUE)
+	)				
+
+week_df <- week_df[1:nrow(week_df)-1, ]
 ####################################################################################
 ################################## Save Data #######################################
 ####################################################################################

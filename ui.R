@@ -32,7 +32,7 @@ ui <- navbarPage(
   fluidPage(
   	sidebarPanel(
   		selectInput("time", "Select time scale",
-  								choices = c("Hourly", "Daily")),
+  								choices = c("Hourly", "Daily", "Weekly")),
   		br(),
   		br(),
   		h4(span("Developed by", style = "color:grey")),

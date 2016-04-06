@@ -52,17 +52,17 @@ ggplot(data = weather, aes(x = Date2, y = switch (input$measure,
     })
     
     output$daily <- renderPlot({
-    	ggplot(data = weather, aes(x = dmy, y = switch (input$measure,
-    																									"Outside Temperature" = weather$Temp_Out,
-    																									"Outside Humidity" = weather$Hum_Out,
-    																									"Dew Point" = weather$Dew_Pt,
-    																									"Wind Speed" = weather$Wind_Speed,
-    																									"Heat Index" = weather$Heat_Index,
-    																									"Solar Radiation" = weather$Solar_Rad,
-    																									"UV Index" = weather$UV_Index,
-    																									"UV Dose" = weather$UV_Dose))) +
-    		stat_summary(fun.data = "mean_cl_boot", geom = "line", na.rm = TRUE) +
-    		geom_smooth(na.rm = TRUE, colour = "green", fill = "pink") +
+    	ggplot(data = day_df, aes(x = dmy, y = switch (input$measure,
+    																									"Outside Temperature" = day_df$Temp_Out,
+    																									"Outside Humidity" = day_df$Hum_Out,
+    																									"Dew Point" = day_df$Dew_Pt,
+    																									"Wind Speed" = day_df$Wind_Speed,
+    																									"Heat Index" = day_df$Heat_Index,
+    																									"Solar Radiation" = day_df$Solar_Rad,
+    																									"UV Index" = day_df$UV_Index,
+    																									"UV Dose" = day_df$UV_Dose))) +
+    		geom_line(stat = "identity") +
+    		geom_smooth() +
     		
     		ylab(switch(input$measure,
     								"Outside Temperature" = "Fahrenheit",
@@ -94,16 +94,16 @@ ggplot(data = weather, aes(x = Date2, y = switch (input$measure,
     
     # week
     output$weekly <- renderPlot({
-    	ggplot(data = weather, aes(x = week, y = switch (input$measure,
-    																									"Outside Temperature" = weather$Temp_Out,
-    																									"Outside Humidity" = weather$Hum_Out,
-    																									"Dew Point" = weather$Dew_Pt,
-    																									"Wind Speed" = weather$Wind_Speed,
-    																									"Heat Index" = weather$Heat_Index,
+    	ggplot(data = week_df, aes(x = week, y = switch (input$measure,
+    																									"Outside Temperature" = week_df$Temp_Out,
+    																									"Outside Humidity" = week_df$Hum_Out,
+    																									"Dew Point" = week_df$Dew_Pt,
+    																									"Wind Speed" = week_df$Wind_Speed,
+    																									"Heat Index" = week_df$Heat_Index,
     																									"Solar Radiation" = weather$Solar_Rad,
-    																									"UV Index" = weather$UV_Index,
-    																									"UV Dose" = weather$UV_Dose))) +
-    		stat_summary(fun.data = "mean_cl_boot", geom = "line", na.rm = TRUE) +
+    																									"UV Index" = week_df$UV_Index,
+    																									"UV Dose" = week_df$UV_Dose))) +
+    		geom_line(stat = "identity") +
 
     		
     		ylab(switch(input$measure,
@@ -142,9 +142,8 @@ ggplot(data = weather, aes(x = Date2, y = switch (input$measure,
     switch(input$time,
     			 "Hourly" = plot(weather[, c("Temp_Out", "Hum_Out", "Dew_Pt", "Wind_Speed",
     			 														"Heat_Index", "Solar_Rad", "UV_Index", "UV_Dose")]),
-    			 
-    			 	"Daily" = plot(wecor_day[, c("Temp_Out", "Hum_Out", "Dew_Pt", "Wind_Speed",
-    			 											 "Heat_Index", "Solar_Rad", "UV_Index", "UV_Dose")])
+    			 	"Daily" = plot(day_df),
+    			 "Weekly" = plot(week_df)
     )
     			 		}, height = 800, width = 1200)
 
