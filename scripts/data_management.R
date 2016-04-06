@@ -5,7 +5,7 @@
 rm(list = ls(all = TRUE))
 gc()
 
-load("./data/weather.Rdata")
+load("./data/weather.RData")
 
 ####################################################################################
 ############################ Data Management #######################################
@@ -33,6 +33,11 @@ weather$dmy <- as.Date(weather$dmy, format = "%d/%m/%Y")
 aggregate(Temp_Out ~ dmy , data = weather,
 					FUN = function (x) mean(x, na.rm = TRUE))
 
+
+# Wind Speed ------------------------------------------------------------------------
+
+weather$Wind_Speed <- as.double(weather$Wind_Speed)
+
 # Create a weekday vector vector ----------------------------------------------------
 
 library(lubridate)
@@ -42,8 +47,31 @@ weather$week <- week(weather$Date2)
 aggregate(Temp_Out ~ week , data = weather,
 					FUN = function (x) mean(x, na.rm = TRUE))
 
+
+####################################################################################
+################################## Corelation #####################################
+####################################################################################
+
+
+# Hourly correlation plot -----------------------------------------------------------
+
+plot(weather[, c("Temp_Out", "Hum_Out", "Dew_Pt", "Wind_Speed",
+															"Heat_Index", "Solar_Rad", "UV_Index", "UV_Dose")])
+
+# Daily data ------------------------------------------------------------------------
+
+wecor_day <- 
+	weather[!duplicated(weather$dmy),]
+
+# Daily correlation plot ------------------------------------------------------------
+
+
+plot(wecor_day[, c("Temp_Out", "Hum_Out", "Dew_Pt", "Wind_Speed",
+									 "Heat_Index", "Solar_Rad", "UV_Index", "UV_Dose")])
+
 ####################################################################################
 ################################## Save Data #######################################
 ####################################################################################
 
-sa
+save.image(file = "./data/weather.RData")
+

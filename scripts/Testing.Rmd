@@ -55,8 +55,10 @@ ggplot(data = weather, aes(x = dmy, y = Temp_Out)) +
 	geom_smooth(na.rm = TRUE, colour = "green", fill = "pink") 
 	
 
-ggplot(data = weather, aes(x = dmy, y = Temp_Out)) +
+ggplot(data = weather, aes(x = week, y = Temp_Out)) +
 	stat_summary(fun.data = "mean_cl_boot", geom = "line", na.rm = TRUE) +
-	geom_smooth(na.rm = TRUE, colour = "green", fill = "pink") 
+	geom_smooth(na.rm = TRUE, colour = "green", fill = "pink") +
+	scale_x_continuous(
+		breaks = min(weather$week, na.rm = TRUE):max(weather$week, na.rm = TRUE))
 	
 ```

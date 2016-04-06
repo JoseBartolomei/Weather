@@ -2,7 +2,7 @@ library(shiny)
 library(ggplot2)
 
 # Load data
-load("./data/weather.Rdata")
+load("./data/weather.RData")
 
 ## Server
 shinyServer(function(input, output) {
@@ -104,7 +104,7 @@ ggplot(data = weather, aes(x = Date2, y = switch (input$measure,
     																									"UV Index" = weather$UV_Index,
     																									"UV Dose" = weather$UV_Dose))) +
     		stat_summary(fun.data = "mean_cl_boot", geom = "line", na.rm = TRUE) +
-    		geom_smooth(na.rm = TRUE, colour = "green", fill = "pink") +
+
     		
     		ylab(switch(input$measure,
     								"Outside Temperature" = "Fahrenheit",
@@ -131,7 +131,22 @@ ggplot(data = weather, aes(x = Date2, y = switch (input$measure,
     									"at Universidad del Este, Carolina, Puerto Rico from",
     									min(weather$dmy, na.rm = TRUE),
     									"to",
-    									max(weather$dmy, na.rm = TRUE), sep = " "))
+    									max(weather$dmy, na.rm = TRUE), sep = " ")) +
+    		
+    		scale_x_continuous(
+    			breaks = min(weather$week, na.rm = TRUE):max(weather$week, na.rm = TRUE))
     })
     
-})
+    # cor_plot
+    output$cor_plot <-renderPlot({
+    switch(input$time,
+    			 "Hourly" = plot(weather[, c("Temp_Out", "Hum_Out", "Dew_Pt", "Wind_Speed",
+    			 														"Heat_Index", "Solar_Rad", "UV_Index", "UV_Dose")]),
+    			 
+    			 	"Daily" = plot(wecor_day[, c("Temp_Out", "Hum_Out", "Dew_Pt", "Wind_Speed",
+    			 											 "Heat_Index", "Solar_Rad", "UV_Index", "UV_Dose")])
+    )
+    			 		}, height = 800, width = 1200)
+
+    	
+    	}) # shinyServer close
