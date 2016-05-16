@@ -7,6 +7,11 @@ gc()
 
 load("./data/weather.RData")
 
+# library ---------------------------------------------------------------------------
+library(plyr)
+library(tidyr)
+library(lubridate)
+
 ####################################################################################
 ############################ Data Management #######################################
 ####################################################################################
@@ -40,8 +45,6 @@ weather$Wind_Speed <- as.double(weather$Wind_Speed)
 
 # Create a weekday vector vector ----------------------------------------------------
 
-library(lubridate)
-
 weather$week <- week(weather$Date2)
 # Check vector
 aggregate(Temp_Out ~ week , data = weather,
@@ -58,38 +61,72 @@ aggregate(Temp_Out ~ week , data = weather,
 plot(weather[, c("Temp_Out", "Hum_Out", "Dew_Pt", "Wind_Speed",
 															"Heat_Index", "Solar_Rad", "UV_Index", "UV_Dose")])
 
+####################################################################################
+################################## Aggregation #####################################
+####################################################################################
 
+####################################################################################
+# Functions for aggregation -----------------------------------------------------------------
+####################################################################################
+
+UL <- function(x, ...){
+	mean(x, na.rm = TRUE) + (qt(.975, df = n-1) * (sd(x, na.rm = TRUE)/sqrt(length(x))))
+}
+
+LL <- function(x, ...){
+	mean(x, na.rm = TRUE) - (qt(.975, df = n-1) * (sd(x, na.rm = TRUE)/sqrt(length(x))))
+}
+
+funs <- c(LL, mean, UL)
+
+####################################################################################
 # Daily aggregation -----------------------------------------------------------------
-
-library(dplyr)
-day_df <- weather %>% group_by(dmy) %>% 
-	summarise(Temp_Out = mean(Temp_Out, na.rm = TRUE),
-						Hum_Out = mean(Hum_Out, na.rm = TRUE),
-						Dew_Pt = mean(Dew_Pt, na.rm = TRUE),
-						Wind_Speed = mean(Wind_Speed, na.rm = TRUE),
-						Heat_Index = mean(Heat_Index, na.rm = TRUE),
-						Solar_Rad = mean(Solar_Rad, na.rm = TRUE),
-						UV_Index = mean(UV_Index, na.rm = TRUE),
-						UV_Dose = mean(UV_Dose, na.rm = TRUE)
-	)				
-
-
-# Weekly aggregatopm ------------------------------------------------------------
+####################################################################################
+w_l <- # weather measures list by week
+	lapply(X = lapply(X = funs,
+										FUN = function(f) ldply(weather[, c("Temp_Out", "Hum_Out", "Dew_Pt",
+																												"Wind_Speed", "Heat_Index",
+																												"Solar_Rad", "UV_Index",
+																												"UV_Dose")],
+																						.fun = function(x) by(x, weather$dmy,
+																																	FUN = function(x) f(x, na.rm = TRUE)))),
+				 FUN = function(x) gather(data = x, key = week, value = "Measure",
+				 												 2:length(x), convert = TRUE, factor_key = TRUE))
 
 
-library(dplyr)
-week_df <- weather %>% group_by(week) %>% 
-	summarise(Temp_Out = mean(Temp_Out, na.rm = TRUE),
-						Hum_Out = mean(Hum_Out, na.rm = TRUE),
-						Dew_Pt = mean(Dew_Pt, na.rm = TRUE),
-						Wind_Speed = mean(Wind_Speed, na.rm = TRUE),
-						Heat_Index = mean(Heat_Index, na.rm = TRUE),
-						Solar_Rad = mean(Solar_Rad, na.rm = TRUE),
-						UV_Index = mean(UV_Index, na.rm = TRUE),
-						UV_Dose = mean(UV_Dose, na.rm = TRUE)
-	)				
+# weather data frame for ggplot2
+gwdf <- data.frame(m_l[[1]], Upper_Limit = m_l[[2]][,3], Lower_Limit = m_l[[3]][, 3])
 
-week_df <- week_df[1:nrow(week_df)-1, ]
+colnames(gwdf) <- c("measure", "week", "lower_Limit", "mean", "upper_limit")
+
+head(gwdf)
+
+
+####################################################################################
+# Weekly aggregation -----------------------------------------------------------------
+####################################################################################
+
+
+w_l <- # weather measures list by week
+	lapply(X = lapply(X = funs,
+				FUN = function(f) ldply(weather[, c("Temp_Out", "Hum_Out", "Dew_Pt",
+																												"Wind_Speed", "Heat_Index",
+																												"Solar_Rad", "UV_Index",
+																												"UV_Dose")],
+																						.fun = function(x) by(x, weather$week,
+				 FUN = function(x) f(x, na.rm = TRUE)))),
+				 FUN = function(x) gather(data = x, key = week, value = "Measure",
+				 												 2:length(x), convert = TRUE, factor_key = TRUE))
+
+
+# weather data frame for ggplot2
+gwdf <- data.frame(m_l[[1]], Upper_Limit = m_l[[2]][,3], Lower_Limit = m_l[[3]][, 3])
+
+colnames(gwdf) <- c("measure", "week", "lower_Limit", "mean", "upper_limit")
+
+head(gwdf)
+
+###
 ####################################################################################
 ################################## Save Data #######################################
 ####################################################################################
