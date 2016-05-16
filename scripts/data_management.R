@@ -70,11 +70,11 @@ plot(weather[, c("Temp_Out", "Hum_Out", "Dew_Pt", "Wind_Speed",
 ####################################################################################
 
 UL <- function(x, ...){
-	mean(x, na.rm = TRUE) + (qt(.975, df = n-1) * (sd(x, na.rm = TRUE)/sqrt(length(x))))
+	mean(x, na.rm = TRUE) + (qt(.975, df = length(x)-1) * (sd(x, na.rm = TRUE)/sqrt(length(x))))
 }
 
 LL <- function(x, ...){
-	mean(x, na.rm = TRUE) - (qt(.975, df = n-1) * (sd(x, na.rm = TRUE)/sqrt(length(x))))
+	mean(x, na.rm = TRUE) - (qt(.975, df = length(x)-1) * (sd(x, na.rm = TRUE)/sqrt(length(x))))
 }
 
 funs <- c(LL, mean, UL)
@@ -82,32 +82,31 @@ funs <- c(LL, mean, UL)
 ####################################################################################
 # Daily aggregation -----------------------------------------------------------------
 ####################################################################################
-w_l <- # weather measures list by week
+m_l <- # weather measures list by day
 	lapply(X = lapply(X = funs,
 										FUN = function(f) ldply(weather[, c("Temp_Out", "Hum_Out", "Dew_Pt",
 																												"Wind_Speed", "Heat_Index",
 																												"Solar_Rad", "UV_Index",
 																												"UV_Dose")],
 																						.fun = function(x) by(x, weather$dmy,
-																																	FUN = function(x) f(x, na.rm = TRUE)))),
-				 FUN = function(x) gather(data = x, key = week, value = "Measure",
+				 FUN = function(x) f(x, na.rm = TRUE)))),
+				 FUN = function(x) gather(data = x, key = dmy, value = "Measure",
 				 												 2:length(x), convert = TRUE, factor_key = TRUE))
 
 
 # weather data frame for ggplot2
-gwdf <- data.frame(m_l[[1]], Upper_Limit = m_l[[2]][,3], Lower_Limit = m_l[[3]][, 3])
+day_agg <- data.frame(m_l[[1]], Upper_Limit = m_l[[2]][,3], Lower_Limit = m_l[[3]][, 3])
 
-colnames(gwdf) <- c("measure", "week", "lower_Limit", "mean", "upper_limit")
+colnames(day_agg) <- c("measure", "day", "lower_Limit", "mean", "upper_limit")
 
-head(gwdf)
+head(day_agg)
 
 
 ####################################################################################
 # Weekly aggregation -----------------------------------------------------------------
 ####################################################################################
 
-
-w_l <- # weather measures list by week
+m_l <- # weather measures list by week
 	lapply(X = lapply(X = funs,
 				FUN = function(f) ldply(weather[, c("Temp_Out", "Hum_Out", "Dew_Pt",
 																												"Wind_Speed", "Heat_Index",
@@ -120,11 +119,11 @@ w_l <- # weather measures list by week
 
 
 # weather data frame for ggplot2
-gwdf <- data.frame(m_l[[1]], Upper_Limit = m_l[[2]][,3], Lower_Limit = m_l[[3]][, 3])
+week_agg <- data.frame(m_l[[1]], Upper_Limit = m_l[[2]][,3], Lower_Limit = m_l[[3]][, 3])
 
-colnames(gwdf) <- c("measure", "week", "lower_Limit", "mean", "upper_limit")
+colnames(week_agg) <- c("measure", "week", "lower_Limit", "mean", "upper_limit")
 
-head(gwdf)
+head(week_agg)
 
 ###
 ####################################################################################
